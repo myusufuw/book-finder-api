@@ -6,7 +6,7 @@ let books = bookList
 const app = new Hono()
 
 app.get('/', (c) => {
-  return c.text('Book Finder 📚')
+  return c.text('Book Finder API 📚')
 })
 
 // GET ALL BOOKS
@@ -52,6 +52,30 @@ app.post('/books', async (c) => {
 
   books = [...books, newBook]
   return c.json({ book: newBook })
+})
+
+// DELETE ALL BOOKS
+app.delete('/books', (c) => {
+  books = []
+
+  return c.json({ message: 'Successfully removed all books data.' })
+})
+
+// DELETE BOOK BY ID
+app.delete('/books/:id', (c) => {
+  const id = Number(c.req.param('id'))
+
+  const book = books.find((book) => book.id === id)
+
+  if (!book) {
+    c.status(404)
+    return c.json({ message: 'Book not found' })
+  }
+
+  const udpatedBooks = books.filter((book) => book.id !== id)
+  books = udpatedBooks
+
+  return c.json({ message: `Successfully deleted ${book.title}` })
 })
 
 export default app
