@@ -1,4 +1,4 @@
-type TypeBook = {
+export type TypeBook = {
   id: number
   title: string
   author: string
