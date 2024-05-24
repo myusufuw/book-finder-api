@@ -44,7 +44,7 @@ app.post('/books', async (c) => {
     weight: body?.weight || null,
     language: body?.language || null,
     description: body?.description || null,
-    urlImage: body?.urlImage || null,
+    imageUrl: body?.imageUrl || null,
     isbn: body?.isbn || null,
   }
 
@@ -98,7 +98,7 @@ app.put('books/:id', async (c) => {
     weight: body?.weight || book.weight,
     language: body?.language || book.language,
     description: body?.description || book.description,
-    urlImage: body?.urlImage || book.urlImage,
+    imageUrl: body?.imageUrl || book.imageUrl,
     isbn: body?.isbn || book.isbn,
   }
 
