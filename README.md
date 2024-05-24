@@ -22,6 +22,12 @@ Book Finder API is a backend application that provides various information about
 | `/books/:id` | `DELETE` | Delete book by id |
 | `/books/:id` | `PUT`    | Update book by id |
 
+## Database Schema
+
+- Link: [DB Docs](https://dbdocs.io/myusufuntung/Book-Finder-API)
+
+![Database Shcema](/src//assets/database-schema.svg)
+
 ## Tech Stacks
 
 - [Bun](https://bun.sh/)
