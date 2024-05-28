@@ -13,14 +13,15 @@ Book Finder API is a backend application that provides various information about
 - Production: [Book Finder](https://book-finder-api.myusufuw.com)
 - Local: http://localhost:3000
 
-| Endpoint     | HTTP     | Description       |
-| ------------ | -------- | ----------------- |
-| `/books`     | `GET`    | Get all books     |
-| `/books/:id` | `GET`    | Get book by id    |
-| `/books`     | `POST`   | Add new book      |
-| `/books`     | `DELETE` | Delete all books  |
-| `/books/:id` | `DELETE` | Delete book by id |
-| `/books/:id` | `PUT`    | Update book by id |
+| Endpoint      | HTTP     | Description        |
+| ------------- | -------- | ------------------ |
+| `/books`      | `GET`    | Get all books      |
+| `/books/:id`  | `GET`    | Get book by id     |
+| `/books`      | `POST`   | Add new book       |
+| `/books`      | `DELETE` | Delete all books   |
+| `/books/:id`  | `DELETE` | Delete book by id  |
+| `/books/:id`  | `PUT`    | Update book by id  |
+| `/books/seed` | `POST`   | Seeding books data |
 
 ## Database Schema
 
