@@ -1,0 +1,28 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Books {
+  id               Int       @id @default(autoincrement())
+  created_at       DateTime? @default(now())
+  updated_at       DateTime? @updatedAt
+  title            String    @unique @db.VarChar(255)
+  author           String    @db.VarChar(255)
+  publication_date DateTime? @db.Timestamptz()
+  number_of_pages  Int?
+  length           Float?
+  width            Float?
+  weight           Float?
+  language         String?   @db.VarChar(255)
+  description      String    @db.Text
+  image_url        String?   @db.VarChar(255)
+  isbn             String?   @unique @db.VarChar(255)
+}
