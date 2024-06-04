@@ -34,6 +34,9 @@ Book Finder API is a backend application that provides various information about
 - [Bun](https://bun.sh/)
 - [Hono](https://hono.dev/)
 - [Typescript](https://www.typescriptlang.org/)
+- [Prisma](https://www.prisma.io/)
+- [Render](https://render.com/)
+- [Neon](https://neon.tech/)
 
 ## Getting started
 
