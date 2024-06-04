@@ -1,7 +1,7 @@
 # https://docs.docker.com/build/guide/intro/
 
 # Use the official Bun image from the Docker Hub || https://hub.docker.com/r/oven/bun
-FROM oven/bun:alpine
+FROM oven/bun:debian
 
 # Create and change to the app directory
 WORKDIR /usr/src/app
@@ -11,6 +11,9 @@ COPY . .
 
 # Install app dependencies
 RUN bun install
+
+# Prisma generate
+RUN bunx prisma generate
 
 # Bind the app to port 3000
 EXPOSE 3000
