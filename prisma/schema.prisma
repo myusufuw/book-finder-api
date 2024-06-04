@@ -12,8 +12,6 @@ datasource db {
 
 model Books {
   id               Int       @id @default(autoincrement())
-  created_at       DateTime? @default(now())
-  updated_at       DateTime? @updatedAt
   title            String    @unique @db.VarChar(255)
   author           String    @db.VarChar(255)
   publication_date DateTime? @db.Timestamptz()
@@ -25,4 +23,21 @@ model Books {
   description      String    @db.Text
   image_url        String?   @db.VarChar(255)
   isbn             String?   @unique @db.VarChar(255)
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+
+  publisher   Publisher? @relation(fields: [publisherId], references: [id])
+  publisherId Int?
+}
+
+model Publisher {
+  id      Int    @id @default(autoincrement())
+  name    String @unique @db.VarChar(255)
+  address String @unique @db.VarChar(255)
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+
+  books Books[]
 }
