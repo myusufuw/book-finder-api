@@ -5,6 +5,8 @@ import { publisherList } from "../data/publishers"
 export const publisher = new Hono()
   // SEED BOOKS DATA
   .post("/seed", async (c) => {
+    await prisma.publisher.deleteMany()
+
     const result = await prisma.publisher.createMany({
       data: publisherList,
     })
@@ -13,14 +15,21 @@ export const publisher = new Hono()
   })
   // GET ALL PUBLISHER
   .get("/", async (c) => {
-    const publisher = await prisma.publisher.findMany()
+    const publisher = await prisma.publisher.findMany({
+      include: {
+        books: true,
+      },
+    })
     return c.json(publisher)
   })
 
   // GET DETAIL PUBLISHER BY ID
   .get("/:id", async (c) => {
     const id = Number(c.req.param("id"))
-    const publisher = await prisma.publisher.findUnique({ where: { id } })
+    const publisher = await prisma.publisher.findUnique({
+      where: { id },
+      include: { books: true },
+    })
 
     if (!publisher) {
       c.status(404)
