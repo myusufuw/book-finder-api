@@ -10,11 +10,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Books {
-  id               Int       @id @default(autoincrement())
-  created_at       DateTime? @default(now())
-  updated_at       DateTime? @updatedAt
-  title            String    @unique @db.VarChar(255)
+model Book {
+  id Int @id @default(autoincrement())
+
+  title String  @unique @db.VarChar(255)
+  isbn  String? @unique @db.VarChar(255)
+
   author           String    @db.VarChar(255)
   publication_date DateTime? @db.Timestamptz()
   number_of_pages  Int?
@@ -24,5 +25,24 @@ model Books {
   language         String?   @db.VarChar(255)
   description      String    @db.Text
   image_url        String?   @db.VarChar(255)
-  isbn             String?   @unique @db.VarChar(255)
+
+  publisher    Publisher? @relation(fields: [publisher_id], references: [id])
+  publisher_id Int?
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+}
+
+model Publisher {
+  id Int @id @default(autoincrement())
+
+  name String  @unique @db.VarChar(255)
+  slug String? @unique
+
+  address String @db.VarChar(255)
+
+  books Book[]
+
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
 }
