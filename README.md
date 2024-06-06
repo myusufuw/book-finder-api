@@ -10,7 +10,7 @@ Book Finder API is a backend application that provides various information about
 
 ## REST API Endpoints
 
-- Production: [Book Finder](https://book-finder-lhbt.onrender.com)
+- Production: [Book Finder](https://book-finder-api.myusufuw.com/)
 - Local: http://localhost:3000
 
 | Endpoint      | HTTP     | Description        |

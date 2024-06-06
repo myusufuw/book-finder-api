@@ -1,142 +1,240 @@
-import { Hono } from "hono"
+import { OpenAPIHono, z } from "@hono/zod-openapi"
 import { prisma } from "../lib/db"
 import { bookList } from "../data/books"
 
-export const booksRoute = new Hono()
+import * as bookService from "./service"
+import { BookIdSchema, CreateBookSchema, UpdateBookSchema } from "./schema"
+
+const API_TAG = ["Book"]
+
+export const booksRoute = new OpenAPIHono()
   // SEED BOOKS DATA
-  .post("/seed", async (c) => {
-    await prisma.book.deleteMany()
-    const publisherList = await prisma.publisher.findMany()
-
-    if (publisherList.length === 0) {
-      c.status(404)
-      return c.json({ message: "Please create a publisher data" })
-    }
-
-    bookList.forEach(async (book) => {
-      const slug = book.publisher_slug
-
-      delete book.publisher_slug
-
-      await prisma.book.create({
-        data: {
-          ...book,
-          publisher: { connect: { slug: slug } },
+  .openapi(
+    {
+      method: "post",
+      path: "/seed",
+      description: "Seed the books data",
+      responses: {
+        200: {
+          description: "Successfully seeded the books data",
         },
-      })
-    })
+      },
+      tags: API_TAG,
+    },
+    async (c) => {
+      const publisherList = await bookService.checkPublisher()
 
-    return c.json({
-      message: "Successfully seeded the books data",
-    })
-  })
+      if (publisherList.length === 0) {
+        c.status(404)
+        return c.json({ message: "Please create a publisher data" })
+      }
+
+      await bookService.seed()
+
+      return c.json({
+        message: "Successfully seeded the books data",
+      })
+    }
+  )
 
   // GET ALL BOOKS
-  .get("/", async (c) => {
-    const books = await prisma.book.findMany({
-      include: {
-        publisher: true,
+  .openapi(
+    {
+      method: "get",
+      path: "/",
+      description: "Get all books",
+      responses: {
+        200: {
+          description: "Successfully get all books",
+        },
       },
-    })
-    return c.json(books)
-  })
+      tags: API_TAG,
+    },
+    async (c) => {
+      const publisher = await bookService.getAll()
+      return c.json(publisher)
+    }
+  )
 
   // GET DETAIL BOOK BY ID
-  .get("/:id", async (c) => {
-    const id = Number(c.req.param("id"))
-    const book = await prisma.book.findUnique({
-      where: { id },
-      include: { publisher: true },
-    })
+  .openapi(
+    {
+      method: "get",
+      path: "/{id}",
+      request: {
+        params: BookIdSchema,
+      },
+      description: "Get detail book by id",
+      responses: {
+        200: {
+          description: "Successfully get book details",
+        },
+        400: {
+          description: "Book not found",
+        },
+      },
+      tags: API_TAG,
+    },
+    async (c) => {
+      const id = Number(c.req.param("id"))
 
-    if (!book) {
-      c.status(404)
-      return c.json({ message: "Book not found" })
+      const book = await bookService.getDetailById(id)
+
+      if (!book) {
+        c.status(404)
+        return c.json({ message: "Book not found" })
+      }
+
+      return c.json(book)
     }
-
-    return c.json(book)
-  })
+  )
 
   // POST ADD NEW BOOK
-  .post("/", async (c) => {
-    const body = await c.req.json()
-
-    const createNewBook = await prisma.book.create({
-      data: {
-        title: body?.title || null,
-        author: body?.author || null,
-        publication_date: body?.publication_date || null,
-        number_of_pages: body?.number_of_pages || null,
-        length: body?.length || null,
-        width: body?.width || null,
-        weight: body?.weight || null,
-        language: body?.language || null,
-        description: body?.description || null,
-        image_url: body?.image_url || null,
-        isbn: body?.isbn || null,
-        publisher: { connect: { slug: body?.publisher_slug } },
-      },
-    })
-
-    return c.json({ book: createNewBook })
-  })
-
-  // DELETE ALL BOOKS
-  .delete("/", async (c) => {
-    const result = await prisma.book.deleteMany()
-
-    return c.json({
-      message: "Successfully removed all books data.",
-      result,
-    })
-  })
-
-  // DELETE BOOK BY ID
-  .delete("/:id", async (c) => {
-    const id = Number(c.req.param("id"))
-
-    const deletedBook = await prisma.book.delete({ where: { id } })
-
-    return c.json({
-      message: `Successfully deleted ${deletedBook.title}`,
-      deletedBook,
-    })
-  })
-
-  // UPDATE BOOK BY ID
-  .put("/:id", async (c) => {
-    const id = Number(c.req.param("id"))
-    const body = await c.req.json()
-
-    const currentPublisher = await prisma.book.findUnique({
-      where: { id },
-      include: { publisher: true },
-    })
-
-    const updatedBook = await prisma.book.update({
-      where: { id },
-      data: {
-        title: body?.title,
-        author: body?.author,
-        publication_date: body?.publication_date,
-        number_of_pages: body?.number_of_pages,
-        length: body?.length,
-        width: body?.width,
-        weight: body?.weight,
-        language: body?.language,
-        description: body?.description,
-        image_url: body?.image_url,
-        isbn: body?.isbn,
-        publisher: {
-          connect: {
-            slug: body?.publisher_slug ?? currentPublisher?.publisher?.slug,
+  .openapi(
+    {
+      method: "post",
+      path: "/",
+      request: {
+        body: {
+          content: {
+            "application/json": {
+              schema: CreateBookSchema,
+            },
           },
         },
       },
-    })
+      description: "Create new book",
+      responses: {
+        200: {
+          description: "Successfully created the book",
+        },
+      },
+      tags: API_TAG,
+    },
+    async (c) => {
+      const body = await c.req.json()
 
-    return c.json({
-      message: "Successfully updated the book",
-      updatedBook,
-    })
-  })
+      const createNewBook = await bookService.createBook(body)
+
+      return c.json({ book: createNewBook })
+    }
+  )
+
+  // DELETE ALL BOOKS
+  .openapi(
+    {
+      method: "delete",
+      path: "/",
+      description: "Delete all books",
+      responses: {
+        200: {
+          description: "Successfully deleted all books data.",
+        },
+      },
+      tags: API_TAG,
+    },
+    async (c) => {
+      const result = await bookService.deleteAll()
+
+      return c.json({
+        message: "Successfully deleted all books data.",
+        result,
+      })
+    }
+  )
+
+  // // DELETE BOOK BY ID
+  .openapi(
+    {
+      method: "delete",
+      path: "/{id}",
+      request: {
+        params: BookIdSchema,
+      },
+      description: "Delete the book by id",
+      responses: {
+        200: {
+          description: "Successfully delete the book",
+        },
+        400: {
+          description: "Book not found",
+        },
+      },
+      tags: API_TAG,
+    },
+    async (c) => {
+      const id = Number(c.req.param("id"))
+
+      const book = await bookService.getDetailById(id)
+
+      if (!book) {
+        c.status(404)
+        return c.json({ message: "Book not found" })
+      }
+
+      const deletedBook = await bookService.deleteById(id)
+
+      return c.json({
+        message: `Successfully deleted ${deletedBook.title}`,
+        deletedBook,
+      })
+    }
+  )
+
+  // UPDATE BOOK BY ID
+  .openapi(
+    {
+      method: "put",
+      path: "/{id}",
+      request: {
+        params: BookIdSchema,
+        body: {
+          content: {
+            "application/json": {
+              schema: UpdateBookSchema,
+            },
+          },
+        },
+      },
+      description: "Update the book",
+      responses: {
+        200: {
+          description: "Successfully updated the book",
+        },
+        400: {
+          description: "Book not found",
+        },
+      },
+      tags: API_TAG,
+    },
+    async (c) => {
+      const id = Number(c.req.param("id"))
+      const body = await c.req.json()
+
+      const book = await prisma.book.findUnique({
+        where: { id },
+      })
+
+      const currentPublisher = await prisma.book.findUnique({
+        where: { id },
+        include: { publisher: true },
+      })
+
+      if (!book) {
+        c.status(404)
+        return c.json({ message: "Publisher not found" })
+      }
+
+      const updatedPublisher = await bookService.updateBook(
+        id,
+        body,
+        book,
+        currentPublisher?.publisher?.slug
+      )
+
+      return c.json({
+        message: "Successfully updated the book",
+        updatedPublisher,
+      })
+    }
+  )
