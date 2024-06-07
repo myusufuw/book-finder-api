@@ -1,17 +1,31 @@
 # Book Finder Backend Rest API
 
-Book Finder API is a backend application that provides various information about books through an API. This application allows users to search for books by title, author, ISBN, and other parameters.
+Book Finder API is a RESTful API service designed to help users manage
+book information. This application allows users to create, read, update,
+and delete (CRUD) book data.
+
+The primary goal of Book Finder API is to provide an easily accessible
+platform for managing book information. This application is designed for
+developers who want to build applications or services that require book
+data management features.
 
 ## Features
 
-- Search for books by title, author, and ISBN
-- Detailed information about books including title, author, publisher, publication date, and description
-- Perform CRUD (Create, Read, Update, Delete) operations on books
+- Perform CRUD (Create, Read, Update, Delete) operations on books.
+- Detailed information about books including title, author, publisher, publication date, etc.
 
 ## REST API Endpoints
 
-- Production: [Book Finder](https://book-finder-api.myusufuw.com/)
-- Local: http://localhost:3000
+- Production:
+
+  - [Book Finder](https://book-finder-api.myusufuw.com/)
+  - [API Docs](https://book-finder-api.myusufuw.com/docs)
+  - [Swagger UI](https://book-finder-api.myusufuw.com/ui)
+
+- Local:
+  - App: `http://localhost:3000`
+  - API Docs: `http://localhost:3000/docs`
+  - Swagger UI: `http://localhost:3000/ui`
 
 | Endpoint      | HTTP     | Description        |
 | ------------- | -------- | ------------------ |
@@ -37,19 +51,3 @@ Book Finder API is a backend application that provides various information about
 - [Prisma](https://www.prisma.io/)
 - [Render](https://render.com/)
 - [Neon](https://neon.tech/)
-
-## Getting started
-
-To install dependencies:
-
-```sh
-bun install
-```
-
-To run:
-
-```sh
-bun run dev
-```
-
-open http://localhost:3000
